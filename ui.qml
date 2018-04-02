@@ -10,6 +10,14 @@ ApplicationWindow {
     height: 512
     //flags: Qt.SplashScreen
     //flags: Qt.WindowSystemMenuHint
+    property int last_payed: 0
+    property int sum: 0
+    property int step: 3
+    property bool lock: false
+
+    Component.onCompleted: {
+        bank.history_check('Shalom')
+    }
 
     Image {
         width: parent.width
@@ -18,6 +26,7 @@ ApplicationWindow {
 
         Component.onCompleted: {
             window.flags = Qt.SplashScreen
+            bank.totally('love')
         }
 
         focus: true
@@ -75,6 +84,17 @@ ApplicationWindow {
                             parent.color = "dodgerblue"
                             parent.border.color = "dodgerblue"
                             parent.children[1].color = "white"
+
+                            bank.history_check('Wise')
+
+                            if(last_payed < 84600) {
+                                totalLabel.text = sum
+                            } else {
+                                sum += step
+                                totalLabel.text = sum
+                                lock = true
+                                bank.pay(sum)
+                            }
                         }
 
                         onExited: {
@@ -96,11 +116,12 @@ ApplicationWindow {
                 }
 
                 Text {
+                    id: totalLabel
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
                     color: "white"
                     font.pixelSize: 32
-                    text: "0.00"
+                    text: sum
                 }
 
             }
@@ -108,6 +129,7 @@ ApplicationWindow {
         }
 
         Rectangle {
+            id: test
             anchors.right: parent.right
             width: parent.width / 5 * 2
             height: parent.height
@@ -127,6 +149,18 @@ ApplicationWindow {
     }
 
 
+    Connections {
 
+        target: bank
+
+        onHistory: {
+            last_payed = history_check
+        }
+
+        onTotal: {
+            sum = totally
+            totalLabel.text = sum.toString() + ".00"
+        }
+    }
 
 }
